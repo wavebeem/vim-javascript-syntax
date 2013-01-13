@@ -20,7 +20,7 @@ endif
 
 setlocal iskeyword+=$
 
-syn match   javaScriptOps               '+\|++\|-\|--\|\*\|/\|>>\|<<\|>>>\||\|&\|||\|&&\|%\|\~\|!\|=\|?\|:\|+=\|-=\|\*=\|/='
+syn match   javaScriptOps               '+\|++\|-\|--\|\*\|/\|>\|<\|>>\|<<\|>>>\||\|&\|||\|&&\|%\|\~\|!\|=\|?\|:\|+=\|-=\|\*=\|/='
 syn match   javaScriptDot               '\.'
 syn match   javaScriptComma             ','
 syn match   javaScriptSemicolon         ';'
@@ -35,8 +35,9 @@ syn region  javaScriptStringS          start=+'+  skip=+\\\\\|\\'+  end=+'\|$+  
 
 syn match   javaScriptSpecialCharacter "'\\.'"
 " syn match   javaScriptNumber           '-\=\<\d\+L\=\>\|0[xX][0-9a-fA-F]\+\>\|NaN'
-syn match   javaScriptNumber           '-\=\<\d\+\>\|0[xX][0-9a-fA-F]\+\>\|NaN'
+syn match   javaScriptNumber           '-\=\<\d\+\>\|0[xX][0-9a-fA-F]\+\>'
 syn match   javaScriptFloat            '-\=\<\d\+\.\d\+\([eE]\d\+\)\=\>'
+syn match   javaScriptFloat            '-\=\<\d\+[eE]\d\+\>'
 syn region  javaScriptRegexpString     start=+/[^/*]+me=e-1 skip=+\\\\\|\\/+ end=+/[gi]\{0,2\}\s*$+ end=+/[gi]\{0,2\}\s*[;.,)\]}]+me=e-1 contains=@htmlPreproc oneline
 
 syn keyword javaScriptConditional       if else switch
@@ -46,6 +47,7 @@ syn keyword javaScriptOperator          new delete instanceof typeof
 syn keyword javaScriptType              Array Boolean Date Function Number Object String RegExp Math
 syn keyword javaScriptStatement         return with var let
 syn keyword javaScriptBoolean           true false
+syn keyword javaScriptNaN               NaN
 syn keyword javaScriptNull              null undefined
 syn keyword javaScriptIdentifier        arguments this
 syn keyword javaScriptLabel             case default
@@ -56,20 +58,24 @@ syn keyword javaScriptMember            document event location
 syn keyword javaScriptDeprecated        escape unescape
 syn keyword javaScriptReserved          abstract boolean byte char class const debugger double enum export extends final float goto implements import int interface long native package private protected public short static super synchronized throws transient volatile
 
-if exists("javaScript_fold")
-    syn match   javaScriptFunction      "\<function\>"
-    syn region  javaScriptFunctionFold  start="\<function\>.*[^};]$" end="^\z1}.*$" transparent fold keepend
+" if exists("javaScript_fold")
+"     syn match   javaScriptFunction      "\<function\>"
+"     syn region  javaScriptFunctionFold  start="\<function\>.*[^};]$" end="^\z1}.*$" transparent fold keepend
 
-    syn sync match javaScriptSync       grouphere javaScriptFunctionFold "\<function\>"
-    syn sync match javaScriptSync       grouphere NONE "^}"
+"     syn sync match javaScriptSync       grouphere javaScriptFunctionFold "\<function\>"
+"     syn sync match javaScriptSync       grouphere NONE "^}"
 
-    setlocal foldmethod=syntax
-    setlocal foldtext=getline(v:foldstart)
-else
-    syn keyword javaScriptFunction      function
-    syn match   javaScriptBraces           "[{}\[\]]"
-    syn match   javaScriptParens           "[()]"
-endif
+"     setlocal foldmethod=syntax
+"     setlocal foldtext=getline(v:foldstart)
+" else
+"     syn keyword javaScriptFunction      function
+"     syn match   javaScriptBraces           "[{}\[\]]"
+"     syn match   javaScriptParens           "[()]"
+" endif
+
+syn keyword javaScriptFunction      function
+syn match   javaScriptBraces           "[{}\[\]]"
+syn match   javaScriptParens           "[()]"
 
 syn sync fromstart
 syn sync maxlines=100
@@ -111,6 +117,8 @@ if version >= 508 || !exists("did_javascript_syn_inits")
   HiLink javaScriptBoolean              Boolean
   HiLink javaScriptRegexpString         String
 
+  HiLink javaScriptNaN                  Number
+
   HiLink javaScriptDot                  Dot
   HiLink javaScriptType                 Type
   HiLink javaScriptBraces               Braces
@@ -122,8 +130,8 @@ if version >= 508 || !exists("did_javascript_syn_inits")
   HiLink javaScriptLabel                Label
   HiLink javaScriptException            Exception
   HiLink javaScriptMessage              Keyword
-  HiLink javaScriptGlobal               Keyword
-  HiLink javaScriptMember               Keyword
+  HiLink javaScriptGlobal               Identifier
+  HiLink javaScriptMember               Identifier
   HiLink javaScriptDeprecated           Exception
   HiLink javaScriptReserved             Keyword
   HiLink javaScriptDebug                Debug
